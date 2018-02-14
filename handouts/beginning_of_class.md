@@ -16,7 +16,7 @@ git status
 
 If you have not changed any files, or you have already committed your changes to your own forked repository, you will get a message informing you that everything is up to date.
 
-If Git tells you you have modified files in the step above, you need to stage and commit those changes to your personal fork, then push them. This is required in order to prep for a fetch from the main repo. This process should be starting to feel familiar...
+If Git tells you you have modified files in the step above, you need to stage and commit those changes to your personal fork, then push them.
 
 ```sh
 # Tell git which files need to be committed to your repository.
@@ -24,16 +24,17 @@ git add changed_file.md
 # Or, if you want to add all of your changes at once...
 git add .
 
-# Commit the changed files locally to your personal fork. Remember to include a commit message to serve as a short explanation of what you changed.
+# Commit the changed files locally to your personal fork.
+# Remember to include a descriptive commit message!
 git commit –m ‘my commit message’
 
-# Push the changes to Github. This syncs the files with the online version of our personal forked repo.
+# Push the changes to Github.
 git push origin master
 ```
 
 It's a `push`! `origin` is your forked remote repository and `master` is the branch we are pushing.
 
-### Fetch and merge
+## Fetch and merge
 
 ```sh
 # Check out your fork's master branch.
@@ -45,3 +46,14 @@ git merge class/master
 ```
 
 You should now have any changes made by the teaching staff merged with your forked repository!
+
+## Activate your virtual environment
+
+You need to activate your virtual environment to access all of the python libraries we've installed! As a reminder, you do this as follows:
+
+```sh
+# On Mac or Linux...
+. ~/.venvs/bdvs/bin/activate
+# On Windows...
+. ~/.venvs/bdvs/Scripts/activate
+```

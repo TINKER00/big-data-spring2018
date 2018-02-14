@@ -2,23 +2,23 @@
 
 ## Set up a Twitter Application
 
-This week we are going to scrape data from the Twitter API and make some plots! We are going to use the Twitter REST API, which lets us query and retreive samples of Tweets. To do this, you need API keys that are associated with your account. Your API keys are secret and unique to you and only you, and they gives you access to Twitter data through the API.
+This week we are going to scrape data from the Twitter API and make some plots! We are going to use the Twitter REST API, which lets us query and retrieve samples of Tweets. To do this, you need API keys that are linked to an App that you create through your Twitter account. Your API keys are secret and unique to you and only you, and they gives you access to Twitter data through the API.
 
-There are a couple of ways to get Twitter data, the REST API is just one of them. The others are to set up a Streamer (which streams real time tweets), or to access the Firehose (this means everything!). Read [this article](https://brightplanet.com/2013/06/twitter-firehose-vs-twitter-api-whats-the-difference-and-why-should-you-care/) for a nice comparison between the methods.
+There are a couple of ways to get Twitter data; the REST API is just one of them. The others are to set up a Streamer (which streams real time tweets), or to access the Firehose (this means everything!). Read [this article](https://brightplanet.com/2013/06/twitter-firehose-vs-twitter-api-whats-the-difference-and-why-should-you-care/) to compare these methods.
 
 The Twitter REST API is best place to start and what we will use in class. Follow the following steps to get your keys.
 
-* Create a twitter account if you do not already have one.
-* Go to [https://apps.twitter.com/](https://apps.twitter.com/) and log in with your twitter credentials.
-* Click **"Create New App"** in the upper right corner
-* Fill out the form, give it a name like **data_getter_yourname** and a description. The form will ask for a website---good thing we made one of these a few week ago! Use the github.io page you created as the URL. Leave the Callback URL field blank. Agree to the terms and click "Create your Twitter application".
-* In the next page, click on **Keys and Access Tokens** tab, and copy your "Consumer Key (API Key)" and "Consumer Key (API Secret)".
++ Create a Twitter account if you do not already have one.
++ Go to [https://apps.twitter.com/](https://apps.twitter.com/) and log in with your Twitter credentials.
++ Click **"Create New App"** in the upper right corner
++ Fill out the form, give it a name like 'data_getter_yourname' and a description. The form will ask for a website---good thing we made one of these a few week ago! Use your GitHub Pages site as the URL. Leave the Callback URL field blank. Agree to the terms and click "Create your Twitter application".
++ In the next page, click on **Keys and Access Tokens** tab, and copy your "Consumer Key (API Key)" and "Consumer Key (API Secret)".
 
 ## Create a Python script to store your Twitter keys
 
-We need a Python file that will contain the **Twitter** keys. Open your text editor, and in the materials for the week, *PASTE* these keys into a new file and save it as `twitter-keys.py`. You need to define two string variables, one for each key. Your code should look like this:
+We need to create a Python file (`.py`) that will contain the Twitter keys. Open your text editor, and in the materials for the week, *PASTE* these keys into a new file and save it as `twitter-keys.py`. You need to define two string variables, one for each key. Your code should look like this:
 
-```
+```python
 # In the file you should define two variables (these must be strings!)
 api_key = "your twitter key"
 api_secret = "your twitter secret"
@@ -30,7 +30,7 @@ Using this method, we can then import the keys and use them on a repeated basis,
 
 Here's the thing---it's **never** a good idea to include these keys in a publicly accessible script or webpage. This means that these keys should not find their way to GitHub. One way to keep them private is importing the keys as a variable from a separate, untracked file. We can make sure to avoid accidentally pushing the file by adding its name to a `.gitignore` file.
 
-Create a new file in the root directory of your forked repo. Save this file as .gitignore. Add the following lines to this file:
+Create a new file in the root directory of your forked repo. Save this file as `.gitignore`. Add the following lines to this file:
 
 ```sh
 week-04/**/twitter_keys.py
