@@ -1,2 +1,2 @@
-msg = "Python is printing me!"
+msg = "Arianna loves python!"
 print(msg)
