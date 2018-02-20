@@ -18,8 +18,8 @@ favorite_fruits.append(last_element)
 print(favorite_fruits)
 
 #A.5 Get the list length and print it.
-len(favorite_fruits)
-print len(favorite_fruits)
+favorite_fruits_length = len(favorite_fruits)
+print favorite_fruits_length
 
 #A.6 Replace the last item in the list with the string “new” and print
 for i, v in enumerate(favorite_fruits) :
@@ -76,9 +76,9 @@ num
 
 import random
 def random_numbers():
-    a = int(0)
-    b = int(input("Select Maximum Number "))
-    numbers = [random.randint(a, b)]
+    min = int(0)
+    max = int(input("Select Maximum Number "))
+    numbers = [random.randint(min, max)]
     print(numbers)
 
 random_numbers()
