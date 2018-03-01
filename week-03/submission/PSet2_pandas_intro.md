@@ -29,7 +29,6 @@ import matplotlib.pylab as plt
 %matplotlib inline
 
 # Read in the data
-
 df = pd.read_csv('week-03/data/skyhook_2017-07.csv', sep=',')
 
 # Create a new date column formatted as datetimes.
@@ -59,27 +58,37 @@ for i in range(0, 168, 24):
     ].index, inplace = True)
 ```
 
-## Problem 1: Create a Bar Chart of Total Pings by Date
+|## Problem 1: Create a Bar Chart of Total Pings by Date
 
 Your first task is to create a bar chart (not a line chart!) of the total count of GPS pings, collapsed by date. You'll have to use `.groupby` to collapse your table on the grouping variable and choose how to aggregate the `count` column. Your code should specify a color for the bar chart and your plot should have a title. Check out the [Pandas Visualization documentation](https://pandas.pydata.org/pandas-docs/stable/visualization.html) for some guidance regarding what parameters you can customize and what they do.
 
 ### Solution
 ```python
-counts = df.groupby('date_new')['count'].count().plot(kind='bar', figsize=(12, 4), title=('Total count of GPS pings by date'))
+counts = df.groupby('date_new')['count'].count().plot(kind='bar', figsize=(10, 4), title=('Total count of GPS pings by date'),  color='black')
+counts.set_xlabel("Date")
+counts.set_ylabel("GPS Pings")
 
-#df.groupby(['date_new'])['count'].describe()
-df
+
 ```
-
 ## Problem 2: Modify the Hours Column
 
 Your second task is to further clean the data. While we've successfully cleaned our data in one way (ridding it of values that are outside the 24-hour window that correspond to a given day of the week) it will be helpful to restructure our `hour` column in such a way that hours are listed in a more familiar 24-hour range. To do this, you'll want to more or less copy the structure of the code we used to remove data from hours outside of a given day's 24-hour window. You'll then want to use the [DataFrame's `replace` method](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.replace.html). Note that you can use lists in both `to_replace` and `value`.
+
+
 
 After running your code, you should have either a new column in your DataFrame or new values in the 'hour' column. These should range from 0-23. You can test this out in a couple ways; the simplest is probably to `df['hour'].unique()`; if you're interested in seeing sums of total pings by hour, you can run `df.groupby('hour')['count'].sum()`.
 
 ### Solution
 
 ```python
+#create a new column for the hours that ranges from 0 to 23.
+df['hour_new'] = 0
+df.loc[df['hour'] <=18, 'hour_new'] = df['hour']+5
+df.loc[(df['hour'] >18), 'hour_new'] = (df['hour'] - 19)%24
+df.loc[df['hour'] >=163, 'hour_new'] = df['hour']-163
+
+#Test that I have an hour column ranging from 0 to 23.
+df['hour_new'].unique()
 ```
 
 ## Problem 3: Create a Timestamp Column
@@ -89,6 +98,11 @@ Now that you have both a date and a time (stored in a more familiar 24-hour rang
 ### Solution
 
 ```python
+#Create timestamp column
+df['timestamp'] = pd.to_datetime(df.date_new) + pd.to_timedelta(df.hour_new, unit='h')
+
+#check for 31 days
+df['timestamp'].dt.normalize().value_counts()
 
 ```
 
@@ -99,14 +113,57 @@ Create two more graphs. The first should be a **line plot** of **total activity*
 ### Solution
 
 ```python
+counts_by_day = df.groupby('timestamp')['count'].sum().plot(kind='line', figsize=(10, 4), title=('Sum of GPS Pings per Hour for July'), color='black', linewidth=0.7)
+counts_by_day.set_xlabel("Day")
+counts_by_day.set_ylabel("GPS Pings")
+
+
+
+counts_by_hour = df.groupby('hour_new')['count'].sum().plot(kind='bar', figsize=(10, 4), title=('Total count of GPS pings per Day for the Month of July'), color='black')
+counts_by_hour.set_xlabel("Hour")
+counts_by_hour.set_ylabel("GPS Pings")
 
 ```
-
 ## Problem 5: Create a Scatter Plot of Shaded by Activity
 
 Pick three times (or time ranges) and use the latitude and longitude to produce scatterplots of each. In each of these scatterplots, the size of the dot should correspond to the number of GPS pings. Find the [Scatterplot documentation here](http://pandas.pydata.org/pandas-docs/version/0.19.1/visualization.html#scatter-plot). You may also want to look into how to specify a pandas Timestamp (e.g., pd.Timestamp) so that you can write a mask that will filter your DataFrame appropriately. Start with the [Timestamp documentation](https://pandas.pydata.org/pandas-docs/stable/timeseries.html#timestamps-vs-time-spans)!
 
 ```python
+
+#index the dataframe using timestamp
+df = df.set_index(pd.DatetimeIndex(df['timestamp']))
+#mask the period of interest for the analysis
+time_restricted_data = df.between_time('7:00AM', '9:00AM')
+x = time_restricted_data['lon']
+y = time_restricted_data['lat']
+w = time_restricted_data['count']
+plt.scatter(x, y, s=w*0.01, alpha=0.2,  color='black')
+plt.xlabel('Longitude')
+plt.ylabel('Latitude')
+plt.title('GPS Pings between 7:00am and 9:00am')
+plt.show()
+
+time_restricted_data2 = df.between_time('12:00PM', '2:00PM')
+x = time_restricted_data2['lon']
+y = time_restricted_data2['lat']
+w = time_restricted_data2['count']
+plt.scatter(x, y, s=w*0.01, alpha=0.2,  color='black')
+plt.xlabel('Longitude')
+plt.ylabel('Latitude')
+plt.title('GPS Pings between 12:00pm and 2:00pm')
+plt.show()
+
+
+time_restricted_data3 = df.between_time('6:00PM', '8:00PM')
+
+x = time_restricted_data3['lon']
+y = time_restricted_data3['lat']
+w = time_restricted_data3['count']
+plt.scatter(x, y, s=w*0.01, alpha=0.2,  color='black')
+plt.xlabel('Longitude')
+plt.ylabel('Latitude')
+plt.title('GPS Pings between 6:00pm and 8:00pm')
+plt.show()
 
 ```
 
@@ -115,5 +172,14 @@ Pick three times (or time ranges) and use the latitude and longitude to produce 
 For three of the visualizations you produced above, write a one or two paragraph analysis that identifies:
 
 1. A phenomenon that the data make visible (for example, how location services are utilized over the course of a day and why this might by).
+
+When we aggregate the number of GPS pings at the hour level, we observe a dip in the morning hours relative to the rest of the day. Specifically, between 4 am, and 8 am. The same pattern emerges when we plot the maps. Compared to the figure that plots the GPS pings between 6 and 8 pm, the figure showing hours between 7 am and 9 am shows a lower number of GPS pings.  
+
+
 2. A shortcoming in the completeness of the data that becomes obvious when it is visualized.
+
+A shortcoming of the data is evident when we aggregate the GPS ping activity daily (for the 31 days of July). The figure shows a significant dip in the reported pings after the 24th.
+
 3. How this data could help us identify vulnerabilities related to climate change in the greater Boston area.
+
+Gps data can help us map emission hotspots to address climate change (and specifically global warming). By identifying the choke points where high emissions happen, the city can reduce the city’s overall contribution to global warming.
