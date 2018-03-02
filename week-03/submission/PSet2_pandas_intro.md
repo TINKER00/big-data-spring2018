@@ -82,13 +82,14 @@ After running your code, you should have either a new column in your DataFrame o
 
 ```python
 #create a new column for the hours that ranges from 0 to 23.
-df['hour_new'] = 0
-df.loc[df['hour'] <=18, 'hour_new'] = df['hour']+5
-df.loc[(df['hour'] >18), 'hour_new'] = (df['hour'] - 19)%24
-df.loc[df['hour'] >=163, 'hour_new'] = df['hour']-163
+for i in range(0, 168, 24):
+  j = range(0,168,1)[i - 5]
+  df['hour'].replace(range(j, j + 5, 1), range(-5, 0, 1), inplace=True)
+  df['hour'].replace(range(i, i + 19, 1), range(0, 19, 1), inplace=True)
+
 
 #Test that I have an hour column ranging from 0 to 23.
-df['hour_new'].unique()
+df['hour'].unique()
 ```
 
 ## Problem 3: Create a Timestamp Column
@@ -99,7 +100,7 @@ Now that you have both a date and a time (stored in a more familiar 24-hour rang
 
 ```python
 #Create timestamp column
-df['timestamp'] = pd.to_datetime(df.date_new) + pd.to_timedelta(df.hour_new, unit='h')
+df['timestamp'] = pd.to_datetime(df.date_new) + pd.to_timedelta(df.hour, unit='h')
 
 #check for 31 days
 df['timestamp'].dt.normalize().value_counts()
@@ -119,7 +120,7 @@ counts_by_day.set_ylabel("GPS Pings")
 
 
 
-counts_by_hour = df.groupby('hour_new')['count'].sum().plot(kind='bar', figsize=(10, 4), title=('Total count of GPS pings per Day for the Month of July'), color='black')
+counts_by_hour = df.groupby('hour')['count'].sum().plot(kind='bar', figsize=(10, 4), title=('Total count of GPS pings per Day for the Month of July'), color='black')
 counts_by_hour.set_xlabel("Hour")
 counts_by_hour.set_ylabel("GPS Pings")
 
@@ -133,28 +134,28 @@ Pick three times (or time ranges) and use the latitude and longitude to produce 
 #index the dataframe using timestamp
 df = df.set_index(pd.DatetimeIndex(df['timestamp']))
 #mask the period of interest for the analysis
-time_restricted_data = df.between_time('7:00AM', '9:00AM')
+time_restricted_data = df.between_time('1:00AM', '3:00AM')
 x = time_restricted_data['lon']
 y = time_restricted_data['lat']
 w = time_restricted_data['count']
 plt.scatter(x, y, s=w*0.01, alpha=0.2,  color='black')
 plt.xlabel('Longitude')
 plt.ylabel('Latitude')
-plt.title('GPS Pings between 7:00am and 9:00am')
+plt.title('GPS Pings between 1:00am and 3:00am')
 plt.show()
 
-time_restricted_data2 = df.between_time('12:00PM', '2:00PM')
+time_restricted_data2 = df.between_time('7:00AM', '9:00AM')
 x = time_restricted_data2['lon']
 y = time_restricted_data2['lat']
 w = time_restricted_data2['count']
 plt.scatter(x, y, s=w*0.01, alpha=0.2,  color='black')
 plt.xlabel('Longitude')
 plt.ylabel('Latitude')
-plt.title('GPS Pings between 12:00pm and 2:00pm')
+plt.title('GPS Pings between 7:00am and 9:00am')
 plt.show()
 
 
-time_restricted_data3 = df.between_time('6:00PM', '8:00PM')
+time_restricted_data3 = df.between_time('5:00PM', '7:00PM')
 
 x = time_restricted_data3['lon']
 y = time_restricted_data3['lat']
@@ -162,7 +163,7 @@ w = time_restricted_data3['count']
 plt.scatter(x, y, s=w*0.01, alpha=0.2,  color='black')
 plt.xlabel('Longitude')
 plt.ylabel('Latitude')
-plt.title('GPS Pings between 6:00pm and 8:00pm')
+plt.title('GPS Pings between 5:00pm and 7:00pm')
 plt.show()
 
 ```
@@ -173,7 +174,7 @@ For three of the visualizations you produced above, write a one or two paragraph
 
 1. A phenomenon that the data make visible (for example, how location services are utilized over the course of a day and why this might by).
 
-When we aggregate the number of GPS pings at the hour level, we observe a dip in the morning hours relative to the rest of the day. Specifically, between 4 am, and 8 am. The same pattern emerges when we plot the maps. Compared to the figure that plots the GPS pings between 6 and 8 pm, the figure showing hours between 7 am and 9 am shows a lower number of GPS pings.  
+When we aggregate the number of GPS pings at the hour level, we observe a rise in the number of pings as the day goes by. Specifically, activity peaks around commuting hours. This patters becomes explicitly when we look at two particular points in time: the rise in GPS activity after 5 pm, and the spike in GPS activity after 5 am. The same pattern emerges when we plot the maps. Compared to the figure that plots the GPS pings between 7 and 9 am, the figure showing early morning hour (between 1 am and 3 am) shows a lower number of GPS pings.  
 
 
 2. A shortcoming in the completeness of the data that becomes obvious when it is visualized.
