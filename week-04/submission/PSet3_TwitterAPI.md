@@ -173,12 +173,13 @@ tweets = get_tweets(
 
 ```
 #save the raw data (only ran once when I saved the file)
+```python
 tweets.to_csv('/Users/arianna/Desktop/github/big-data-spring2018/week-04/data/tweets_parsed.csv')
-
+```
 #import the 80,000 downloaded tweets and save it to a df
+```python
 df = pd.read_csv('/Users/arianna/Desktop/github/big-data-spring2018/week-04/data/tweets_parsed.csv', low_memory=False, sep=',')
 
-```python
 # Import some additional libraries that will allow us to plot and interact with the operating system
 import numpy as np
 import matplotlib.pyplot as plt
@@ -196,8 +197,6 @@ Clean up the data so that variations of the same user-provided location name are
 df = df.dropna(subset=['location'])
 df.head()
 #drop duplicate tweets
-df.shape
-df.drop_duplicates(subset = 'content', keep = False, inplace = True)
 df.shape
 ```
 
@@ -780,9 +779,6 @@ Clean the search term data as with the previous data.
 #drop missing locations (same as before)
 ```python
 df_tweet_search = df_tweet_search.dropna(subset=['location'])
-df.shape
-
-df.drop_duplicates(subset = 'content', keep = False, inplace = True)
 df.shape
 
 #Given that for specific terms there are less terms, we could consider a more granular cleaning here. But for consistency I decided to keep the same cleaning scheme as the previous question.
