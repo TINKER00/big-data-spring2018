@@ -12,7 +12,11 @@ Today's agenda
 
 ## Download Data
 
+<<<<<<< HEAD
 We've included all of the data for today's workshop in a zip file located at [duspviz.mit.edu/resources/ws04_materials.zip](duspviz.mit.edu/resources/ws04_materials.zip). We've provided this data separately because we're trying to avoid placing our data on GitHub; we'll write code that we version using Git on files that are stored outside of our GitHub repo. This will keep us from encountering nasty issues where were prevented from pushing to GitHub because we have a file in our commit history that exceeds 25 MB.
+=======
+We've included all of the data for today's workshop in a zip file located at [duspviz.mit.edu/resources/ws04_materials.zip](http://duspviz.mit.edu/resources/ws04_materials.zip). We've provided this data separately because we're trying to avoid placing our data on GitHub; we'll write code that we version using Git on files that are stored outside of our GitHub repo. This will keep us from encountering nasty issues where were prevented from pushing to GitHub because we have a file in our commit history that exceeds 25 MB.
+>>>>>>> class/master
 
 ## Landsat
 
@@ -38,7 +42,10 @@ Landsat observations are made available as “scenes”; each of these scenes is
 
 A remarkable amount of analysis can be done by doing basic calculations across these multiple bands.
 
+<<<<<<< HEAD
 Tree cover is dark in the visible spectrum and fairly light in the near infrared spectrum. the difference is how we  estimate tree cover. Of course, this only works if we have leaves in the trees. Autumn wont work so well. Clouds will cause problems. 2 problems: shadow and cloud. Landsat imaged are taken every 16 days (find images in USGH earth explorer).
+=======
+>>>>>>> class/master
 ## Install GDAL
 
 We'll be doing our coding in Python by reading in a library called `osgeo`. However, on the back end, this Python library is powered by a spatial analysis and data management package called GDAL. We'll first have to make sure GDAL is installed on our systems.
@@ -86,7 +93,11 @@ import numpy as np
 import os
 %matplotlib inline
 ## make sure you set the DATA path to be to the folder where you downloaded the data at the beginning of class
+<<<<<<< HEAD
 DATA = "/Users/arianna/Dropbox (MIT)/PHD/Spring_2018/11.S941_Big_Data_Visualization_Society/ws04_materials/"
+=======
+DATA = "/Users/ehuntley/Desktop/week-05/landsat"
+>>>>>>> class/master
 ```
 
 ## Calculating a Normalized Difference Vegetation Index
@@ -100,6 +111,7 @@ Where NIR stands for near-infrared and red is light reflected in the red region.
 Okay, enough biophysics! Let's calculate the NDVI. We begin by reading in our files.
 
 ```python
+<<<<<<< HEAD
 b4_raster = os.path.join(DATA, 'b4.tif')
 b5_raster = os.path.join(DATA, 'b5.tif')
 
@@ -108,6 +120,14 @@ red_data = gdal.Open(b4_raster)
 #Get the first band of the raster. (in this case we only have 1)
 red_band = red_data.GetRasterBand(1)
 #take pixel values as a numpy array
+=======
+red_path = os.path.join(DATA, 'b4.tif')
+nir_path = os.path.join(DATA, 'b5.tif')
+
+# Load in Red band
+red_data = gdal.Open(b4_raster)
+red_band = red_data.GetRasterBand(1)
+>>>>>>> class/master
 red = red_band.ReadAsArray()
 
 # Load in Near-infrasred band
@@ -148,7 +168,10 @@ plt.colorbar()
 
 Uh-oh. That doesn't look too promising... the problem is that we're trying to do math that results in non-integer values with data inputs stored as integers. We can verify this as follows:
 
+<<<<<<< HEAD
 unint16 we cant store positive and negative values, and its an integer so it wont know what to do with the decimals. Now we rescale the data to range between -1 and 1.
+=======
+>>>>>>> class/master
 ```python
 red.dtype
 nir.dtype
@@ -180,11 +203,19 @@ Not only can we estimate tree cover, but we can also estimate land surface tempe
 So far, we've been working with the red and near-infrared bands. To calculate the surface temperature, we'll want to read in one of the thermal bands - these are very similar! For now, let's read in Band 10 and ensure that its stored as a floating point data type.
 
 ```python
+<<<<<<< HEAD
 # Path of TIRS Band (thermal imaging) Temperature
 b10_raster = os.path.join(DATA, 'b10.TIF')
 
 # Load in TIRS Band
 tirs_data = gdal.Open(b10_raster)
+=======
+# Path of TIRS Band
+tirs_path = os.path.join(DATA, 'b10.TIF')
+
+# Load in TIRS Band
+tirs_data = gdal.Open(tirs_path)
+>>>>>>> class/master
 tirs_band = tirs_data.GetRasterBand(1)
 tirs = tirs_band.ReadAsArray()
 tirs = tirs.astype(np.float32)
@@ -202,8 +233,13 @@ We now need to read in some correction values stored in the Landsat metadata in 
  Let's read the text file in as a Python list.
 
 ```python
+<<<<<<< HEAD
 # make this path the local path to your MTL.txt file that you downloaded at the start of the workshop. Read elements in a list, searches for variables of interest, and pulls their files.
 meta_file = '/Users/arianna/Dropbox (MIT)/PHD/Spring_2018/11.S941_Big_Data_Visualization_Society/ws04_materials/MTL.txt'
+=======
+# make this path the local path to your MTL.txt file that you downloaded at the start of the workshop
+meta_file = '/Users/ehuntley/Desktop/week-05/landsat/MTL.txt'
+>>>>>>> class/master
 
 with open(meta_file) as f:
     meta = f.readlines()
@@ -229,6 +265,10 @@ Let's run that list comprehension again, applying our function to the results in
 
 ```python
 matching = [process_string(s) for s in meta if any(xs in s for xs in matchers)]
+<<<<<<< HEAD
+=======
+matching
+>>>>>>> class/master
 ```
 
 Finally, we can assign each element of the list to a different variable name.
@@ -328,7 +368,11 @@ Where:
 + NDVI_v = approximation of the NDVI value for vegetated terrain (0.5)
 
 ```python
+<<<<<<< HEAD
 def emissivity_reclass (pv, ndvi):
+=======
+def emissivity_calc (pv, ndvi):
+>>>>>>> class/master
     ndvi_dest = ndvi.copy()
     ndvi_dest[np.where(ndvi < 0)] = 0.991
     ndvi_dest[np.where((0 <= ndvi) & (ndvi < 0.2)) ] = 0.966
@@ -336,7 +380,11 @@ def emissivity_reclass (pv, ndvi):
     ndvi_dest[np.where(ndvi >= 0.5)] = 0.973
     return ndvi_dest
 
+<<<<<<< HEAD
 emis = emissivity_reclass(pv, ndvi)
+=======
+emis = emissivity_calc(pv, ndvi)
+>>>>>>> class/master
 
 plt.imshow(emis, cmap='RdYlGn')
 plt.colorbar()
@@ -380,6 +428,7 @@ plt.colorbar()
 
 # Write a .tif File
 
+<<<<<<< HEAD
 Creating a new TIF file using GDAL is a bit cumbersome, but it looks a little bit like this. We're going to write our land surface temperature to a Geotiff, just like the ones we imported.
 
 ```python
@@ -406,4 +455,41 @@ new_band = new_dataset.GetRasterBand(1)
 new_band.SetNoDataValue(-1)
 # Write our Numpy array to the new band!
 new_band.WriteArray(lst)
+=======
+Creating a new TIF file using GDAL is a bit cumbersome, but it looks a little bit like this. I've written this as a function, so all you need to provide is a path to write to (`new_raster_file`), an array to write (`array`), and the path to a file that GDAL can reference to determine raster dimensions, etc.
+
+```python
+
+def array2tif(raster_file, new_raster_file, array):
+    """
+    Writes 'array' to a new tif, 'new_raster_file',
+    whose properties are given by a reference tif,
+    here called 'raster_file.'
+    """
+    # Invoke the GDAL Geotiff driver
+    raster = gdal.Open(raster_file)
+
+    driver = gdal.GetDriverByName('GTiff')
+    out_raster = driver.Create(new_raster_file,
+                        raster.RasterXSize,
+                        raster.RasterYSize,
+                        1,
+                        gdal.GDT_Float32)
+    out_raster.SetProjection(raster.GetProjection())
+    # Set transformation - same logic as above.
+    out_raster.SetGeoTransform(raster.GetGeoTransform())
+    # Set up a new band.
+    out_band = out_raster.GetRasterBand(1)
+    # Set NoData Value
+    out_band.SetNoDataValue(-1)
+    # Write our Numpy array to the new band!
+    out_band.WriteArray(array)
+```
+
+Now, to export our new Land Surface Temperature estimates, all we have to do is call this function like this:
+
+```python
+out_path = os.path.join(DATA, 'lst.tif')
+array2tif(tirs_path, out_path, lst)
+>>>>>>> class/master
 ```
