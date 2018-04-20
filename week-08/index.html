@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Learning D3</title>
+  <meta charset = "utf-8">
+  <script src="https://d3js.org/d3.v4.js" charset="utf-8"></script>
+</head>
+<body>
+  <!-- 40, 90, 30, 60 -->
+  <!--  <svg width="160"  height = "180">
+    <rect x="30"    width="20" height="40" fill="steelblue"></rect>
+    <rect x="55"    width="20" height="90" fill="steelblue"></rect>
+    <rect x="80"    width="20" height="30" fill="steelblue"></rect>
+    <rect x="105"   width="20" height="60" fill="steelblue"></rect>
+    </svg> -->
+
+  <script>
+    var ratData = [40, 90, 30, 60];
+    //Select all rectangles in our page
+
+    var w = 150;
+    var h = 175;
+
+    var svg = d3.select("body")
+    .append("svg")
+    .attr("width", w)
+    .attr("height", h);
+
+    //METHOD CHAINING
+    svg.selectall("rect")
+    //Bind ratData to rectangles
+    .data(ratData)
+    .enter()
+    .append("rect")
+    .attr("x", 30)
+    .attr("y", 0)
+    .attr("width", 20)
+    .attr("height", 100)
+    .attr("fill", "steelblue");
+
+  </script>
+</body>
+</html>
