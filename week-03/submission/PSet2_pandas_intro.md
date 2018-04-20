@@ -29,6 +29,9 @@ import matplotlib.pylab as plt
 %matplotlib inline
 
 # Read in the data
+# On PH computer
+df = pd.read_csv('/Users/phoebe/Dropbox (MIT)/big-data/data/skyhook_2017-07.csv', sep=',')
+
 df = pd.read_csv('week-03/data/skyhook_2017-07.csv', sep=',')
 
 # Create a new date column formatted as datetimes.
@@ -67,7 +70,10 @@ Your first task is to create a bar chart (not a line chart!) of the total count 
 counts = df.groupby('date_new')['count'].count().plot(kind='bar', figsize=(10, 4), title=('Total count of GPS pings by date'),  color='black')
 counts.set_xlabel("Date")
 counts.set_ylabel("GPS Pings")
-
+## Ariana, you are counting the number of counts, insteading of summing the number of counts. In other words, .count() will count the number of rows and .sum() will add the values together. So the correct chart would look like this:
+counts = df.groupby('date_new')['count'].sum().plot(kind='bar', figsize=(10, 4), title=('Total count of GPS pings by date'),  color='black')
+counts.set_xlabel("Date")
+counts.set_ylabel("GPS Pings")
 
 ```
 ## Problem 2: Modify the Hours Column
@@ -104,7 +110,7 @@ df['timestamp'] = pd.to_datetime(df.date_new) + pd.to_timedelta(df.hour, unit='h
 
 #check for 31 days
 df['timestamp'].dt.normalize().value_counts()
-
+df.head()
 ```
 
 ## Problem 4: Create Two Line Charts of Activity by Hour
@@ -117,8 +123,6 @@ Create two more graphs. The first should be a **line plot** of **total activity*
 counts_by_day = df.groupby('timestamp')['count'].sum().plot(kind='line', figsize=(10, 4), title=('Sum of GPS Pings per Hour for July'), color='black', linewidth=0.7)
 counts_by_day.set_xlabel("Day")
 counts_by_day.set_ylabel("GPS Pings")
-
-
 
 counts_by_hour = df.groupby('hour')['count'].sum().plot(kind='bar', figsize=(10, 4), title=('Total count of GPS pings per Day for the Month of July'), color='black')
 counts_by_hour.set_xlabel("Hour")
@@ -156,7 +160,6 @@ plt.show()
 
 
 time_restricted_data3 = df.between_time('5:00PM', '7:00PM')
-
 x = time_restricted_data3['lon']
 y = time_restricted_data3['lat']
 w = time_restricted_data3['count']
@@ -166,6 +169,7 @@ plt.ylabel('Latitude')
 plt.title('GPS Pings between 5:00pm and 7:00pm')
 plt.show()
 
+## Great job! What do you think the big grey circle is on the northeastern part of the city? 
 ```
 
 ## Problem 6: Analyze Your (Very) Preliminary Findings
