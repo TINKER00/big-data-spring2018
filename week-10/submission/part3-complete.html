@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+/* CSS goes here. */
+div.tooltip {
+  color: #222;
+  background: #fff;
+  border-radius: 5px;
+  padding: .2em;
+  text-shadow: #f5f5f5 0 1px 0;
+  opacity: 0.7;
+  position: absolute;
+}
+
+</style>
+<body>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+  <script src="https://d3js.org/topojson.v2.min.js"></script>
+<script>
+
+var width = 960,
+    height = 1000;
+
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+    var perc = d3.map();
+		var neigh = svg.append("g");
+
+var color = d3.scaleThreshold()
+    .domain([0, .001, 0.002, 0.003, 0.004])
+    .range(d3.schemeBlues[5]);
+
+var tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+
+var sequentialScale = d3.scaleLinear()
+    .domain([0, 0.004]);
+
+var legend_labels = ["0%", "0.1%", "0.2%", "0.3%", "0.4%"]
+
+
+    d3.queue()
+        .defer(d3.json, "data/neighborhoods.json") // Load Boston Neighborhoods
+        .defer(d3.csv, "data/boston_311_totals.csv", function(d){console.log(d.rate); perc.set(d.id, +d.rate);})
+        .await(ready); // Run 'ready' when files are loaded
+
+    function ready(error, neighborhoods) {
+      if (error) throw error;
+
+		var subunits = topojson.feature(neighborhoods, neighborhoods.objects.boston_neigh).features;
+
+		var Projection = d3.geoAlbers()
+		.scale(190000)
+	  .rotate([71.057,0])//rotation means longtitude
+	  .center([0,42.3131])//rotation and center split the lon/lat
+	  .translate([width/2,height/2]);
+
+		var geoPath = d3.geoPath()
+	    .projection(Projection);
+
+			neigh.selectAll("path")
+		    .data(subunits)
+		    .enter()
+		    .append("path")
+        .style("stroke", "white")
+        .attr("fill", function(d) { return color(d.rate = perc.get(d.properties.OBJECTID)); })
+		    .attr("d",geoPath)
+        .on("mouseover", function(d) {
+            tooltip.transition()
+            .duration(200)
+            .style("opacity", .7);
+            tooltip.html(d.properties.Name)
+            .style("left", (d3.event.pageX) + "px")
+            .style("top", (d3.event.pageY - 28) + "px").text(d.properties.Name + ": " + (100*d.rate).toFixed(2) + "%")
+            d3.select(this).style("opacity", 0.5);
+
+          })
+          .on("mouseout", function(d) {
+            tooltip.transition()
+            .duration(500)
+            d3.select(this).style("opacity", 1);
+          })
+
+
+          var legend = svg.selectAll('g.legendEntry')
+                        .data(color.range())
+                        .enter()
+                        .append('g')
+                        .attr('class', 'legendEntry')
+                        .attr("transform", function (d, i) {
+                        {
+                        return "translate(0," + i * 5 + ")"
+                        }
+                        })
+                    legend
+                        .append('rect')
+                        .attr("x", width - 780)
+                        .attr("y", function(d, i) {
+                           return i * 20;
+                        })
+
+                       .attr("width", 30)
+                       .attr("height", 12)
+                       .style("stroke", "none")
+                       .style("stroke-width", 1)
+                       .style("fill", function(d){return d;});
+                           //the data objects are the fill colors
+                       neigh.append('text')
+                                .attr('x', 140)
+                                .attr('y', 135)
+                                .text('Percentage of 311 Requests from Twitter')
+                                .style('font-size', '14px')
+                                .style('font-weight', 'bold');
+
+                    legend
+                        .append('text')
+                        .attr("x", width - 820)
+                        .attr("y", function(d, i) {
+                           return i * 20;
+                        })
+                        .attr("dy", "0.8em") //place text one line *below* the x,y point
+                        .text(function(d, i){ return legend_labels[i]; });
+		};
+</script>
